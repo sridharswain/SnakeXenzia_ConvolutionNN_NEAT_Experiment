@@ -13,6 +13,7 @@ class Game:
         self.frameRate = framerate
 
     def updateFrame(self):
+        pygame.display.update()
         self.clock.tick(self.frameRate)
     
     def startEnvironment(self):
@@ -22,9 +23,9 @@ class Game:
             for event in pygame.event.get():
                 if(event.type == pygame.QUIT):
                     self.gameOver = True
-            self.gameDisplay.fill((255, 255, 255))
+            self.gameDisplay.fill(colors["white"])
             self.updateFrame()
         pygame.quit()
 
-game = Game(100)
+game = Game(800)
 game.startEnvironment()
