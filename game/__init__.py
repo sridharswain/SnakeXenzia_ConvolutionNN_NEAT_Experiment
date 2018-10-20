@@ -1,5 +1,6 @@
 import pygame
 import utils
+from sprites.snakenode import SnakeNode
 from utils import colors
 
 display_width = 1300  #DISPLAY
@@ -11,6 +12,8 @@ class Game:
         pygame.display.set_caption("Snake AI")
         self.clock = pygame.time.Clock()
         self.frameRate = framerate
+        self.move_power = 10
+        self.snake = []
 
     def updateFrame(self):
         pygame.display.update()
