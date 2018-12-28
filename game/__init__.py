@@ -15,14 +15,18 @@ class Game:
         self.move_power = 10
         self.initSnakeLength = 10
 
+    """ Updates content on the screen.
+        Called after bliting sprites on screen. """
     def updateFrame(self):
         pygame.display.update()
         self.clock.tick(self.frameRate)
     
-    def startEnvironment(self):
+    """Initiates Game loop.
+        Game runtime in written here. """
+    def begin(self):
         self.gameOver = False
         self.gameDisplay.fill((255, 255, 255))
-        self.snake = Snake(self.gameDisplay, (display_width // 2, display_height//2), self.initSnakeLength)
+        self.snake = Snake(self.gameDisplay, (display_width // 2, display_height // 2), self.initSnakeLength)
         while not self.gameOver:
             for event in pygame.event.get():
                 if(event.type == pygame.QUIT):
@@ -32,5 +36,6 @@ class Game:
             self.updateFrame()
         pygame.quit()
 
-game = Game(10)
-game.startEnvironment()
+# Start game with 40 frame rate.
+game = Game(40)
+game.begin()
