@@ -12,7 +12,7 @@ class Game:
         pygame.display.set_caption("Snake AI")
         self.clock = pygame.time.Clock()
         self.frameRate = framerate
-        self.move_power = 10
+        self.move_power = 20
         self.initSnakeLength = 10
 
     """ Updates content on the screen.
