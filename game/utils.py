@@ -1,4 +1,4 @@
-import pygame
+from pygame import font
 colors = {"white" : (255,255,255), "black" : (0,0,0)}
 
 def text_objects(text, font):
@@ -6,7 +6,7 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 def message_display(gameDisplay, text, x, y):
-    largeText = pygame.font.Font('freesansbold.ttf',20)
+    largeText = font.Font('freesansbold.ttf',20)
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.center = ((x),(y))
     gameDisplay.blit(TextSurf, TextRect)
