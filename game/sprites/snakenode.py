@@ -1,29 +1,33 @@
 import pygame
+import measurement
 from utils import colors
+from game_grid import GameGrid
 
-class SnakeNode:
-    def __init__(self, gameDisplay, direction, position, isHead, isFood):
+class SnakeNode(pygame.sprite.Sprite):
+    def __init__(self, gameDisplay, direction, position, isHead):
+        pygame.sprite.Sprite.__init__(self)
         self.gameDisplay = gameDisplay
-        self.width = 10
-        self.height = 10
+        self.width = measurement.SNAKE_NODE_WIDTH
+        self.height = measurement.SNAKE_NODE_HEIGHT
         self.direction = direction
         self.x = position[0]
         self.y = position[1]
         self.moveSpeed = self.width
         self.isHead = isHead
-        self.isFood = isFood
+        self.draw()
 
     def drawAt(self, x, y):
-        self.node = pygame.draw.rect(self.gameDisplay, colors["black"], (x, y, self.width, self.height))
+        self.rect = pygame.draw.rect(self.gameDisplay, colors["black"], (x, y, self.width, self.height))
         self.x = x
         self.y = y
 
     def draw(self):
-        self.node = pygame.draw.rect(self.gameDisplay, colors["black"], (self.x, self.y, self.width, self.height))
+        self.rect = pygame.draw.rect(self.gameDisplay, colors["black"], (self.x, self.y, self.width, self.height))
 
     def move(self):
         self.x += self.direction[0] * self.moveSpeed
         self.y += self.direction[1] * self.moveSpeed
+
 
     def setDirection(self, direction):
         self.direction = direction
