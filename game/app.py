@@ -9,7 +9,6 @@ class App:
         pygame.display.set_caption("Snake AI")
         self.clock = pygame.time.Clock()
         self.frameRate = framerate
-        self.environment = None
 
     """ Updates content on the screen.
         Called after bliting sprites on screen. """
@@ -19,7 +18,7 @@ class App:
     
     """Initiates Game loop.
         Game runtime in written here. """
-    def begin(self, beforeFrame = None, afterFrame = None):
+    def begin(self, loop = None, evaluate_move = None, on_food_consume = None):
         self.gameDisplay.fill((255, 255, 255))
         while True:
             for event in pygame.event.get():
@@ -27,18 +26,11 @@ class App:
                     self.environment.gameOver = True
                     pygame.quit()
             self.gameDisplay.fill(colors["white"])
-            if self.environment is None:
-                continue
-            if beforeFrame is not None:
-                beforeFrame(self.environment)
-            self.environment.loop_game()
+            if loop is not None:
+                collision = loop(evaluate_move, on_food_consume)
+                if (collision):
+                    return True
             self.updateFrame()
-            if afterFrame is not None:
-                afterFrame(self.environment)
 
-    def start(self):
-        self.environment = Environment(self.gameDisplay)
-        return self.environment
-
-    def destroy(self):
-        self.environment = None
+    def newEnvironment(self):
+        return Environment(self.gameDisplay)
