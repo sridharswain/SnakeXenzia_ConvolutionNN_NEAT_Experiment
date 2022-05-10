@@ -10,7 +10,7 @@ from environment import Environment
 from sprites.snake import Snake
 
 FRAME_RATE = 160
-# Start game with 40 frame rate.
+# Start game with 160 frame rate.
 app = App(FRAME_RATE)
 stats = None
 gen = 0
