@@ -1,15 +1,9 @@
 import pygame
 import random
 import measurement
+import direction
 from sprites.snakenode import SnakeNode
 from game_grid import GameGrid
-
-# Directions :
-# movement in (x, y)
-# right : (1, 0)
-# left : (-1, 0)
-# up : (0, -1)
-# down : (0, +1)
 
 class Snake:
     def __init__(self, gameDisplay, initPosition, snakeLength, vector, on_collision):
@@ -17,8 +11,8 @@ class Snake:
         self.on_collision = on_collision
 
         # Initialize head
-        self.headDirection = (1, 0)
-        self.head = SnakeNode(self.gameDisplay, (1, 0), (initPosition[0], initPosition[1]), True)
+        self.headDirection = direction.RIGHT
+        self.head = SnakeNode(self.gameDisplay, direction.RIGHT, (initPosition[0], initPosition[1]), True)
 
         # Initialize Game vector
         self.vector = vector
@@ -45,26 +39,26 @@ class Snake:
         self.vector.pin(nodePosX, nodePosY)
 
     def turnRight(self):
-        if not not (self.headDirection == (-1, 0) or self.headDirection == (1, 0)):
-            self.headDirection = (1, 0)
+        if not (self.headDirection == direction.RIGHT or self.headDirection == direction.LEFT):
+            self.headDirection = direction.RIGHT
             return True
         return False
 
     def turnLeft(self):
-        if not (self.headDirection == (1, 0) or self.headDirection == (-1, 0)):
-            self.headDirection = (-1, 0)
+        if not (self.headDirection == direction.RIGHT or self.headDirection == direction.LEFT):
+            self.headDirection = direction.LEFT
             return True
         return False
 
     def turnDown(self):
-        if not (self.headDirection == (0, -1) or self.headDirection == (0, 1)):
-            self.headDirection = (0, 1)
+        if not (self.headDirection == direction.UP or self.headDirection == direction.DOWN):
+            self.headDirection = direction.DOWN
             return True
         return False
     
     def turnUp(self):
-        if not (self.headDirection == (0, 1) or self.headDirection == (0, -1)):
-            self.headDirection = (0, -1)
+        if not (self.headDirection == direction.UP or self.headDirection == direction.DOWN):
+            self.headDirection = direction.UP
             return True
         return False
 

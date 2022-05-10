@@ -1,3 +1,4 @@
+import math
 import pygame
 import config
 from sprites.snake import Snake
@@ -17,6 +18,10 @@ class Environment:
         initPosition = (config.DISPLAY_WIDTH // 2, config.DISPLAY_HEIGHT // 2)
         self.snake = Snake(self.gameDisplay, initPosition, config.INITIAL_SNAKE_LENGTH, self.vector, on_collision)
         self.food = Food(self.gameDisplay, self.snake, food_position)
+        return self
+
+    def distance_from_food(self):
+        return math.sqrt(((self.food.x - self.snake.head.x)**2) + ((self.food.y - self.snake.head.y)**2))
         
     def loop_game(self, evaluate_move = None, on_food_consume = None):
         if evaluate_move is not None:
