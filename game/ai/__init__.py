@@ -1,5 +1,5 @@
 import os
-from pickletools import genops
+from turtle import distance
 import neat
 import pygame
 import random
@@ -8,6 +8,7 @@ from app import App
 from ai.agent import Agent
 from environment import Environment
 from sprites.snake import Snake
+from game_grid import GameGrid
 
 FRAME_RATE = 160
 # Start game with 160 frame rate.
@@ -31,10 +32,17 @@ def evaluate_on_food_consume_callback(agent: Agent):
 
 def evaluate_move_callback(agent: Agent):
     def evaluate_move(env: Environment):
+        # dist_resiprocate = 100/env.distance_from_food() + 0.01
+        agent.genome.fitness += 0.001
+
+        # Activate Genome Net and get output
         vector = env.vector
-        input = (env.food.x, env.food.y, env.snake.head.x,
-                 env.snake.head.y, *vector.get_raw())
+        food_index = GameGrid.index(env.food.x, env.food.y)
+        snake_head_index = GameGrid.index(env.snake.head.x, env.snake.head.y)
+        input = (*food_index, *snake_head_index, *vector.get_raw(),
+                 env.snake.distance_from_border_collision())
         output = agent.net.activate(input)
+
         moved = False
         if output[0] < -0.6:
             moved = env.snake.turnDown()
@@ -44,15 +52,6 @@ def evaluate_move_callback(agent: Agent):
             moved = env.snake.turnUp()
         elif output[0] < 0.6:
             moved = env.snake.turnRight()
-        # else:
-        #     agent.genome.fitness += 1.05
-
-        # if moved:
-        #     agent.genome.fitness += 1
-        # else:
-        #     agent.genome.fitness -= 0.05
-        dist = env.distance_from_food()
-        agent.genome.fitness = max(agent.genome.fitness, (1/dist))
 
     return evaluate_move
 
@@ -66,13 +65,13 @@ def eval_genomes(genomes, config):
     food_position = (dummyEnv.food.x, dummyEnv.food.y)
     for genome_id, genome in genomes:
         genome.fitness = 0  # start with fitness level of 0
-        agent = Agent(config, genome, app.newEnvironment())
-        agent.environment.initiate(evaluate_on_collision_callback(agent), food_position)
-        collision = app.begin(agent.environment.loop_game,
-                  evaluate_move=evaluate_move_callback(agent),
-                  on_food_consume=evaluate_on_food_consume_callback(agent))
+        agent = Agent(config, genome, app.newEnvironment(),
+                      evaluate_on_collision_callback, food_position)
+        game_end = app.begin(agent.environment.loop_game,
+                             evaluate_move=evaluate_move_callback(agent),
+                             on_food_consume=evaluate_on_food_consume_callback(agent))
         high_score = max(high_score, agent.environment.score)
-        
+
     print(f"Highest Score: {high_score}")
 
 
@@ -89,7 +88,7 @@ def run(config_file):
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
-    # p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../neat-checkpoint-117"))
+    #p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../neat-checkpoint-11"))
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))

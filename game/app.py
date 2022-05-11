@@ -27,8 +27,8 @@ class App:
                     pygame.quit()
             self.gameDisplay.fill(colors["white"])
             if loop is not None:
-                collision = loop(evaluate_move, on_food_consume)
-                if (collision):
+                game_end = loop(evaluate_move, on_food_consume)
+                if (game_end):
                     return True
             self.updateFrame()
 

@@ -17,4 +17,5 @@ class Food(Sprite):
          self.rect = pygame.draw.rect(self.gameDisplay, colors["black"], (self.x * measurement.SNAKE_NODE_WIDTH, self.y * measurement.SNAKE_NODE_HEIGHT, self.width, self.height))
 
     def isConsumed(self):
+        self.snake.moves_taken = 0
         return self.rect.colliderect(self.snake.head)

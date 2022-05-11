@@ -24,6 +24,10 @@ class GameGrid:
             self.gameVector[gridY][gridX] = 0
             self.not_occupied.add((gridX, gridY))
 
+    @staticmethod
+    def index(x, y):
+        return (x // measurement.SNAKE_NODE_WIDTH, y // measurement.SNAKE_NODE_HEIGHT)
+
     def any_not_occupied(self):
         return random.choice(tuple(self.not_occupied))
 

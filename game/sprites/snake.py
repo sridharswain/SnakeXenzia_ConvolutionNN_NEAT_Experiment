@@ -1,4 +1,5 @@
 import pygame
+import config
 import random
 import measurement
 import direction
@@ -9,6 +10,7 @@ class Snake:
     def __init__(self, gameDisplay, initPosition, snakeLength, vector, on_collision):
         self.gameDisplay = gameDisplay
         self.on_collision = on_collision
+        self.moves_taken = 0
 
         # Initialize head
         self.headDirection = direction.RIGHT
@@ -85,6 +87,10 @@ class Snake:
         self.head.draw()
         self._pin_head()
         collision = collision or self._check_border_collision()
+        if not collision:
+            self.moves_taken += 1
+            if self.moves_taken > config.MAX_MOVES_REQUIRED_FOR_FOOD:
+                self.on_collision(self)
         return collision
 
     def _check_body_collision(self):
@@ -108,3 +114,13 @@ class Snake:
 
     def _pin_head(self):
         self.vector.pin(self.head.x, self.head.y)
+
+    def distance_from_border_collision(self):
+        if self.headDirection == direction.UP:
+            return self.head.y // measurement.SNAKE_NODE_HEIGHT
+        elif self.headDirection == direction.DOWN:
+            return measurement.GRID_LENGTH_Y - self.head.y // measurement.SNAKE_NODE_HEIGHT
+        elif self.headDirection == direction.LEFT:
+            return measurement.GRID_LENGTH_X - self.head.x // measurement.SNAKE_NODE_WIDTH 
+        else:
+            return self.head.x // measurement.SNAKE_NODE_WIDTH
