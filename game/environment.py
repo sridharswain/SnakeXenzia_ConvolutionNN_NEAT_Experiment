@@ -37,4 +37,4 @@ class Environment:
             self.food = Food(self.gameDisplay, self.snake)
             self.snake.addToSnake()
             self.score += 1
-        return collision or self.snake.moves_taken > config.MAX_MOVES_REQUIRED_FOR_FOOD
+        return collision

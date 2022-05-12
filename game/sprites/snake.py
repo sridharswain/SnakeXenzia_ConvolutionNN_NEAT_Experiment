@@ -6,6 +6,7 @@ import direction
 from sprites.snakenode import SnakeNode
 from game_grid import GameGrid
 
+
 class Snake:
     def __init__(self, gameDisplay, initPosition, snakeLength, vector, on_collision):
         self.gameDisplay = gameDisplay
@@ -14,7 +15,8 @@ class Snake:
 
         # Initialize head
         self.headDirection = direction.RIGHT
-        self.head = SnakeNode(self.gameDisplay, direction.RIGHT, (initPosition[0], initPosition[1]), True)
+        self.head = SnakeNode(self.gameDisplay, direction.RIGHT,
+                              (initPosition[0], initPosition[1]), True)
 
         # Initialize Game vector
         self.vector = vector
@@ -25,13 +27,13 @@ class Snake:
         self.snakeNodeGroup = pygame.sprite.Group()
         for i in range(snakeLength - 1):
             self.addToSnake()
-        
+
     def addToSnake(self):
         tailPos = self.snakeNodes[-1]
         nodePosX = tailPos.x - tailPos.direction[0] * tailPos.width
         nodePosY = tailPos.y - tailPos.direction[1] * tailPos.height
         newTail = SnakeNode(
-            self.gameDisplay, 
+            self.gameDisplay,
             tailPos.direction,
             (nodePosX, nodePosY),
             False
@@ -57,7 +59,7 @@ class Snake:
             self.headDirection = direction.DOWN
             return True
         return False
-    
+
     def turnUp(self):
         if not (self.headDirection == direction.UP or self.headDirection == direction.DOWN):
             self.headDirection = direction.UP
@@ -75,7 +77,7 @@ class Snake:
         # elif key[pygame.K_UP] and not (self.headDirection == (0, 1)):
         #     self.headDirection = (0, -1)
 
-        collision  = self._check_body_collision()
+        collision = self._check_body_collision()
         self._unpin_last_node()
         for i in range(len(self.snakeNodes) - 1, 0, -1):
             self.snakeNodes[i].setDirection(self.snakeNodes[i - 1].direction)
@@ -90,11 +92,13 @@ class Snake:
         if not collision:
             self.moves_taken += 1
             if self.moves_taken > config.MAX_MOVES_REQUIRED_FOR_FOOD:
-                self.on_collision(self)
+                self.on_collision(self, -80)
+                return True
         return collision
 
     def _check_body_collision(self):
-        self_collision = pygame.sprite.spritecollide(self.head, self.snakeNodeGroup, False)
+        self_collision = pygame.sprite.spritecollide(
+            self.head, self.snakeNodeGroup, False)
         if self_collision:
             # Game Over
             self.on_collision(self)
@@ -121,6 +125,6 @@ class Snake:
         elif self.headDirection == direction.DOWN:
             return measurement.GRID_LENGTH_Y - self.head.y // measurement.SNAKE_NODE_HEIGHT
         elif self.headDirection == direction.LEFT:
-            return measurement.GRID_LENGTH_X - self.head.x // measurement.SNAKE_NODE_WIDTH 
+            return measurement.GRID_LENGTH_X - self.head.x // measurement.SNAKE_NODE_WIDTH
         else:
             return self.head.x // measurement.SNAKE_NODE_WIDTH

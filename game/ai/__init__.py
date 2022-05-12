@@ -1,5 +1,4 @@
 import os
-from turtle import distance
 import neat
 import pygame
 import random
@@ -19,8 +18,8 @@ high_score = 0
 
 
 def evaluate_on_collision_callback(agent: Agent):
-    def on_collision(snake: Snake):
-        agent.genome.fitness -= 10
+    def on_collision(snake: Snake, reward = -10):
+        agent.genome.fitness += reward
     return on_collision
 
 
@@ -33,14 +32,14 @@ def evaluate_on_food_consume_callback(agent: Agent):
 def evaluate_move_callback(agent: Agent):
     def evaluate_move(env: Environment):
         # dist_resiprocate = 100/env.distance_from_food() + 0.01
-        agent.genome.fitness += 0.001
+        agent.genome.fitness += 0.01
 
         # Activate Genome Net and get output
         vector = env.vector
         food_index = GameGrid.index(env.food.x, env.food.y)
         snake_head_index = GameGrid.index(env.snake.head.x, env.snake.head.y)
         input = (*food_index, *snake_head_index, *vector.get_raw(),
-                 env.snake.distance_from_border_collision())
+                 env.snake.distance_from_border_collision(), *env.snake.headDirection)
         output = agent.net.activate(input)
 
         moved = False
@@ -88,7 +87,7 @@ def run(config_file):
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
-    #p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../neat-checkpoint-11"))
+    #p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../../neat-checkpoint-105"))
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
