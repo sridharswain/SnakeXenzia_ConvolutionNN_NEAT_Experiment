@@ -9,7 +9,7 @@ from environment import Environment
 from sprites.snake import Snake
 from game_grid import GameGrid
 
-FRAME_RATE = 160
+FRAME_RATE = 1000000000
 # Start game with 160 frame rate.
 app = App(FRAME_RATE)
 stats = None
@@ -26,6 +26,7 @@ def evaluate_on_collision_callback(agent: Agent):
 def evaluate_on_food_consume_callback(agent: Agent):
     def on_food_consume(env: Environment):
         agent.genome.fitness += 20
+        pass
     return on_food_consume
 
 
@@ -38,8 +39,13 @@ def evaluate_move_callback(agent: Agent):
         vector = env.vector
         food_index = GameGrid.index(env.food.x, env.food.y)
         snake_head_index = GameGrid.index(env.snake.head.x, env.snake.head.y)
-        input = (*food_index, *snake_head_index, *vector.get_raw(),
-                 env.snake.distance_from_border_collision(), *env.snake.headDirection)
+        distance_from_self_collision = env.snake.distance_from_self_collision()
+        distance_from_border_collision = env.snake.distance_from_border_collision()
+        snake_direction = env.snake.headDirection
+        distance_from_food = env.distance_from_food()
+        # print(f"Food Index : {food_index}, snake_head_index : {snake_head_index} distance_from_self_collision : {distance_from_self_collision}, distance_from_border_collision = {distance_from_border_collision} snake_direction : {snake_direction} distance_from_food : {distance_from_food}")
+        input = (*food_index, *snake_head_index, distance_from_self_collision,
+                 distance_from_border_collision, *snake_direction, distance_from_food)
         output = agent.net.activate(input)
 
         moved = False
@@ -86,17 +92,17 @@ def run(config_file):
                                 config_file)
 
     # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
-    #p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../../neat-checkpoint-105"))
+    #p = neat.Population(config)
+    p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../neat-checkpoint-15527"))
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(5))
+    p.add_reporter(neat.Checkpointer(100))
 
-    # Run for up to 50 generations.
-    winner = p.run(eval_genomes, 10000)
+    # Run for up to 10000 generations.
+    winner = p.run(eval_genomes, 1000000)
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True)
 

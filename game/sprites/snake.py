@@ -14,8 +14,8 @@ class Snake:
         self.moves_taken = 0
 
         # Initialize head
-        self.headDirection = direction.RIGHT
-        self.head = SnakeNode(self.gameDisplay, direction.RIGHT,
+        self.headDirection = random.choice((direction.DOWN, direction.UP, direction.LEFT, direction.RIGHT))
+        self.head = SnakeNode(self.gameDisplay, self.headDirection,
                               (initPosition[0], initPosition[1]), True)
 
         # Initialize Game vector
@@ -128,3 +128,20 @@ class Snake:
             return measurement.GRID_LENGTH_X - self.head.x // measurement.SNAKE_NODE_WIDTH
         else:
             return self.head.x // measurement.SNAKE_NODE_WIDTH
+
+    def distance_from_self_collision(self):
+        if self.headDirection == direction.LEFT or self.headDirection == direction.RIGHT:
+            i = GameGrid.dimension_index_x(self.head.x) + self.headDirection[0]
+            while i >= 0 and i < measurement.GRID_LENGTH_X:
+                if self.vector.at(i, GameGrid.dimension_index_y(self.head.y)) == 1:
+                    return abs(GameGrid.dimension_index_x(self.head.x) - i)
+                i += self.headDirection[0]
+
+        if self.headDirection == direction.UP or self.headDirection == direction.DOWN:
+            i = GameGrid.dimension_index_y(self.head.y) + self.headDirection[1]
+            while i >= 0 and i < measurement.GRID_LENGTH_Y:
+                if self.vector.at(GameGrid.dimension_index_x(self.head.x), i) == 1:
+                    return abs(GameGrid.dimension_index_y(self.head.y) - i)
+                i += self.headDirection[1]
+
+        return -1

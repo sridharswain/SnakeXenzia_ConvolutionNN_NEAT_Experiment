@@ -1,3 +1,4 @@
+import os
 import pygame
 import config
 from environment import Environment
@@ -5,6 +6,8 @@ from utils import colors
 
 class App:
     def __init__(self, framerate):
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
+        pygame.display.init()
         self.gameDisplay = pygame.display.set_mode((config.DISPLAY_WIDTH, config.DISPLAY_WIDTH))
         pygame.display.set_caption("Snake AI")
         self.clock = pygame.time.Clock()

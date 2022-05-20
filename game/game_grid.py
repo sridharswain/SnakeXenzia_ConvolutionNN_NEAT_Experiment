@@ -24,9 +24,20 @@ class GameGrid:
             self.gameVector[gridY][gridX] = 0
             self.not_occupied.add((gridX, gridY))
 
+    def at(self, i, j):
+        return self.gameVector[i][j]
+
     @staticmethod
     def index(x, y):
         return (x // measurement.SNAKE_NODE_WIDTH, y // measurement.SNAKE_NODE_HEIGHT)
+
+    @staticmethod
+    def dimension_index_x(x):
+        return x // measurement.SNAKE_NODE_WIDTH
+
+    @staticmethod
+    def dimension_index_y(y):
+        return y // measurement.SNAKE_NODE_HEIGHT
 
     def any_not_occupied(self):
         return random.choice(tuple(self.not_occupied))
