@@ -37,3 +37,10 @@ class App:
 
     def newEnvironment(self):
         return Environment(self.gameDisplay)
+    
+
+# pygame.init()
+# app = App(10)
+# environemnt = app.newEnvironment().initiate(lambda s : pygame.quit())
+# app.begin(environemnt.loop_game)
+

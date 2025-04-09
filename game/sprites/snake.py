@@ -14,7 +14,8 @@ class Snake:
         self.moves_taken = 0
 
         # Initialize head
-        self.headDirection = random.choice((direction.DOWN, direction.UP, direction.LEFT, direction.RIGHT))
+        # self.headDirection = random.choice((direction.DOWN, direction.UP, direction.LEFT, direction.RIGHT))
+        self.headDirection = direction.RIGHT
         self.head = SnakeNode(self.gameDisplay, self.headDirection,
                               (initPosition[0], initPosition[1]), True)
 
@@ -43,30 +44,32 @@ class Snake:
         self.vector.pin(nodePosX, nodePosY)
 
     def turnRight(self):
+        possible = self.headDirection != direction.LEFT
         if not (self.headDirection == direction.RIGHT or self.headDirection == direction.LEFT):
             self.headDirection = direction.RIGHT
-            return True
-        return False
+        return possible
 
     def turnLeft(self):
+        possible = self.headDirection != direction.RIGHT
         if not (self.headDirection == direction.RIGHT or self.headDirection == direction.LEFT):
             self.headDirection = direction.LEFT
-            return True
-        return False
+        return possible
 
     def turnDown(self):
+        possible = self.headDirection != direction.UP
         if not (self.headDirection == direction.UP or self.headDirection == direction.DOWN):
             self.headDirection = direction.DOWN
-            return True
-        return False
+        return possible
 
     def turnUp(self):
+        possible = self.headDirection != direction.DOWN
         if not (self.headDirection == direction.UP or self.headDirection == direction.DOWN):
             self.headDirection = direction.UP
-            return True
-        return False
+        return possible
 
     def draw(self):
+
+        # Handle keyboard pressed scenario
         # key = pygame.key.get_pressed()
         # if key[pygame.K_RIGHT] and not (self.headDirection == (-1, 0)):
         #     self.headDirection = (1, 0)
@@ -92,7 +95,7 @@ class Snake:
         if not collision:
             self.moves_taken += 1
             if self.moves_taken > config.MAX_MOVES_REQUIRED_FOR_FOOD:
-                self.on_collision(self, -80)
+                self.on_collision(self, -10000)
                 return True
         return collision
 
