@@ -14,7 +14,7 @@ import numpy as np
 MAX_FOOD_DISTANCE = 113
 DIRECTIONS = [direction.DOWN, direction.UP, direction.LEFT, direction.RIGHT]
 
-FRAME_RATE = 100000000000
+FRAME_RATE = 1000000000000
 # Start game with 160 frame rate.
 # pygame.init() # comment to remove display
 app = App(FRAME_RATE)
@@ -24,16 +24,21 @@ high_score = 0
 
 
 def evaluate_on_collision_callback(agent: Agent):
-    def on_collision(snake: Snake, reward = -2):
+    def on_collision(snake: Snake, reward = -5):
         agent.genome.fitness += reward
     return on_collision
 
 
 def evaluate_on_food_consume_callback(agent: Agent):
     def on_food_consume(env: Environment):
-        agent.genome.fitness += 2
+        agent.genome.fitness += 10
     return on_food_consume
 
+
+def calculate_direction_reward_coefficient(snake_direction_x, snake_direction_y, distance_from_food_x, distance_from_food_y):
+    is_moving_closer_in_x = (snake_direction_x * distance_from_food_x) / (abs(distance_from_food_x) if distance_from_food_x != 0 else 1.0)
+    is_moving_closer_in_y = (snake_direction_y * distance_from_food_y) / (abs(distance_from_food_y) if distance_from_food_y != 0 else 1.0)
+    return is_moving_closer_in_x + is_moving_closer_in_y
 
 def evaluate_move_callback(agent: Agent):
     def evaluate_move(env: Environment):
@@ -41,7 +46,7 @@ def evaluate_move_callback(agent: Agent):
 
         # Activate Genome Net and get output
         vector = env.vector
-        food_index = GameGrid.index(env.food.x, env.food.y)
+        food_index = env.food.x, env.food.y
         snake_head_index = GameGrid.index(env.snake.head.x, env.snake.head.y)
         distance_from_self_collision = env.snake.distance_from_self_collision()
         distance_from_border_collision = env.snake.distance_from_border_collision()
@@ -49,7 +54,7 @@ def evaluate_move_callback(agent: Agent):
         distance_from_food_x, distance_from_food_y, absolute_distance_from_food  = env.distance_from_food()
         # print(f"{agent.genomeId} Food Index : {food_index}, snake_head_index : {snake_head_index} distance_from_self_collision : {distance_from_self_collision}, distance_from_border_collision = {distance_from_border_collision} snake_direction : {snake_direction} distance_from_food : {absolute_distance_from_food}, coord: {distance_from_food_x}, {distance_from_food_y}")
         
-        input = (*food_index, *snake_head_index, distance_from_self_collision,
+        input = (distance_from_self_collision,
                  distance_from_border_collision, *snake_direction, distance_from_food_x, distance_from_food_y)
         output = agent.net.activate(input)
         directionArg = np.argmax(output)
@@ -71,10 +76,13 @@ def evaluate_move_callback(agent: Agent):
                 moved = env.snake.turnRight()
         
         if moved:
-             reward_coefficient = 1 - (absolute_distance_from_food/MAX_FOOD_DISTANCE)
-             agent.genome.fitness += (reward_coefficient * 0.1)
+            distance_reward_coefficient = (absolute_distance_from_food/MAX_FOOD_DISTANCE)
+            direction_reward_coefficient = calculate_direction_reward_coefficient(*snake_direction, distance_from_food_x, distance_from_food_y)
+            multiplier = 0.1
+            # print(direction_reward_coefficient*distance_reward_coefficient)
+            agent.genome.fitness += (direction_reward_coefficient * distance_reward_coefficient * multiplier)
         else:
-            agent.genome.fitness -= 1
+            agent.genome.fitness -= 10
     return evaluate_move
 
 
@@ -113,10 +121,10 @@ def run(config_file):
                                 config_file)
 
     # Create the population, which is the top-level object for a NEAT run.
-    # p = neat.Population(config)
+    p = neat.Population(config)
 
-    local_dir = os.path.dirname(__file__)
-    p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../../neat-checkpoint-1468"))
+    # local_dir = os.path.dirname(__file__)
+    # p = neat.Checkpointer.restore_checkpoint(os.path.abspath(local_dir + "/../../neat-checkpoint-275"))
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
@@ -125,7 +133,7 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(100))
 
     # Run for up to 10000 generations.
-    winner = p.run(eval_genomes, 100000)
+    winner = p.run(eval_genomes, 10000000)
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True)
 

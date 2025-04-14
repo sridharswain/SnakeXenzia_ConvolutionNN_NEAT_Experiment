@@ -26,8 +26,8 @@ class Environment:
         return self
 
     def distance_from_food(self):
-        coordinate_distance_x = GameGrid.dimension_index_x(self.snake.head.x) - GameGrid.dimension_index_x(self.food.x)
-        coordinate_distance_y = GameGrid.dimension_index_y(self.snake.head.y) - GameGrid.dimension_index_y(self.food.y)
+        coordinate_distance_x = self.food.x - GameGrid.dimension_index_x(self.snake.head.x)
+        coordinate_distance_y = self.food.y - GameGrid.dimension_index_y(self.snake.head.y)
         absolute_distance = math.sqrt((coordinate_distance_x ** 2) + (coordinate_distance_y ** 2))
         return coordinate_distance_x, coordinate_distance_y, absolute_distance
         

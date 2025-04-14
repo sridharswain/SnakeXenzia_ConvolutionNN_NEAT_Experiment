@@ -95,7 +95,7 @@ class Snake:
         if not collision:
             self.moves_taken += 1
             if self.moves_taken > config.MAX_MOVES_REQUIRED_FOR_FOOD:
-                self.on_collision(self, -10000)
+                self.on_collision(self, -20000000)
                 return True
         return collision
 
